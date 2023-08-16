@@ -35,6 +35,15 @@ export class TasksService {
 
     return task;
   }
+
+  getTaskById(id: string): Task | string {
+    const task = this.tasks.find((task) => task.id === id);
+    if (!task) {
+      return 'Task not found';
+    }
+    return task;
+  }
+
   updateTasks(
     title: string,
     description: string,

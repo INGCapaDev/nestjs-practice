@@ -12,6 +12,14 @@ export class TasksController {
     return this.tasksService.getAllTasks();
   }
 
+  @Get(':id')
+  getTaskById(@Param('id') id: string): Task | string {
+    if (!id) {
+      return 'Id is required';
+    }
+    return this.tasksService.getTaskById(id);
+  }
+
   @Post()
   createTasks(@Body() newTask: CreateTaskDto) {
     if (!newTask.title || !newTask.description) {
@@ -22,6 +30,7 @@ export class TasksController {
       newTask.description.toString(),
     );
   }
+
   updateTasks() {}
 
   @Delete(':id')
