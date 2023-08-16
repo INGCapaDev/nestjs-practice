@@ -22,6 +22,7 @@ export class TasksService {
   getAllTasks() {
     return this.tasks;
   }
+
   createTasks(title: string, description: string) {
     const task = {
       id: uuid(),
@@ -34,6 +35,28 @@ export class TasksService {
 
     return task;
   }
-  updateTasks() {}
-  deleteTasks() {}
+  updateTasks(
+    title: string,
+    description: string,
+    status: TaskStatus,
+    id: string,
+  ) {
+    const task = this.tasks.find((task) => task.id === id);
+    if (!task) {
+      return 'Task not found';
+    }
+    task.title = title;
+    task.description = description;
+    task.status = status;
+    return task;
+  }
+
+  deleteTasks(id: string): string {
+    const task = this.tasks.find((task) => task.id === id);
+    if (!task) {
+      return 'Task not found';
+    }
+    this.tasks = this.tasks.filter((task) => task.id !== id);
+    return 'Task deleted';
+  }
 }
