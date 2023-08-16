@@ -45,19 +45,20 @@ export class TasksService {
   }
 
   updateTasks(
-    title: string,
-    description: string,
-    status: TaskStatus,
     id: string,
-  ) {
-    const task = this.tasks.find((task) => task.id === id);
-    if (!task) {
-      return 'Task not found';
+    updatedFields: {
+      title?: string;
+      description?: string;
+      status?: TaskStatus;
+    },
+  ): string {
+    const task = this.getTaskById(id);
+    if (typeof task === 'string') {
+      return task;
     }
-    task.title = title;
-    task.description = description;
-    task.status = status;
-    return task;
+    const newTask = Object.assign(task, updatedFields);
+    this.tasks.map((task) => (task.id === id ? newTask : task));
+    return `Task '${id}' updated to '${JSON.stringify(newTask)}'`;
   }
 
   deleteTasks(id: string): string {

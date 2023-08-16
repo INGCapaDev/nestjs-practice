@@ -1,7 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { Task } from './tasks.entity';
-import { CreateTaskDto } from './dto/task.dto';
+import { CreateTaskDto, UpdateTaskDto } from './dto/task.dto';
+import { validateUpdateTaskDto } from './task.validations';
 
 @Controller('tasks')
 export class TasksController {
@@ -31,7 +40,18 @@ export class TasksController {
     );
   }
 
-  updateTasks() {}
+  @Patch(':id')
+  updateTasks(@Param('id') id: string, @Body() updatedFields: UpdateTaskDto) {
+    if (!id) {
+      return 'Id is required';
+    }
+    const validFields: UpdateTaskDto = validateUpdateTaskDto(updatedFields);
+    if (Object.keys(validFields).length === 0) {
+      return 'At least one valid field is required';
+    }
+
+    return this.tasksService.updateTasks(id, validFields);
+  }
 
   @Delete(':id')
   deleteTasks(@Param('id') id: string) {
