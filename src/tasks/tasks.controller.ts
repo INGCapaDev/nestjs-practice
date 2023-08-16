@@ -10,7 +10,6 @@ import {
 import { TasksService } from './tasks.service';
 import { Task } from './tasks.entity';
 import { CreateTaskDto, UpdateTaskDto } from './dto/task.dto';
-import { validateUpdateTaskDto } from './task.validations';
 
 @Controller('tasks')
 export class TasksController {
@@ -31,9 +30,6 @@ export class TasksController {
 
   @Post()
   createTasks(@Body() newTask: CreateTaskDto) {
-    if (!newTask.title || !newTask.description) {
-      return 'Title and description are required';
-    }
     return this.tasksService.createTasks(
       newTask.title.toString(),
       newTask.description.toString(),
@@ -41,16 +37,24 @@ export class TasksController {
   }
 
   @Patch(':id')
-  updateTasks(@Param('id') id: string, @Body() updatedFields: UpdateTaskDto) {
-    if (!id) {
-      return 'Id is required';
-    }
-    const validFields: UpdateTaskDto = validateUpdateTaskDto(updatedFields);
-    if (Object.keys(validFields).length === 0) {
-      return 'At least one valid field is required';
+  updateTasks(
+    @Param('id') id: string,
+    @Body() updatedFields: UpdateTaskDto,
+  ): string {
+    const validFields = ['title', 'description', 'status'];
+    const filteredFields: UpdateTaskDto = {};
+
+    validFields.forEach((field) => {
+      if (updatedFields[field]) {
+        filteredFields[field] = updatedFields[field];
+      }
+    });
+
+    if (Object.keys(filteredFields).length === 0) {
+      return 'At least one field is required';
     }
 
-    return this.tasksService.updateTasks(id, validFields);
+    return this.tasksService.updateTasks(id, filteredFields);
   }
 
   @Delete(':id')
